@@ -56,13 +56,20 @@ public class LoginPage {
 	@FindBy(xpath="//div[@id='invalid-email-alert']")
 	private WebElement invalidEmailMsg;
 	
-	@FindBy(xpath="//*[contains(text(),'Sign in or create account')]")
+	@FindBy(xpath="//span[@id='continue']/ancestor::div/h1[contains(text(),'Sign in')]")
 	private WebElement signInOrCreateIcon;
 	
 	
 	public void performLogin(String email , String password) {
+		
 		userNameField.sendKeys(email);
 		continueIcon.click();
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		if(actionUtils.isElementPresent(signInOrCreateIcon) && signInOrCreateIcon.isDisplayed()) {
 			Assert.assertTrue("Error For Invalid Mail is Not Displayed",invalidEmailMsg.isDisplayed());
 		}else {

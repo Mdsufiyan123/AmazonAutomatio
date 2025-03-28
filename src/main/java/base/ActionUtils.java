@@ -39,7 +39,7 @@ public class ActionUtils {
      * Waits until the element is visible before performing an action.
      * @param element WebElement to wait for.
      */
-    private void waitUntilVisible(WebElement element) {
+    public void waitUntilVisible(WebElement element) {
         wait.until(ExpectedConditions.visibilityOf(element));
     }
     

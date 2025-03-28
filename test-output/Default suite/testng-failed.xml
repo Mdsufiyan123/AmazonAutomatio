@@ -5,9 +5,8 @@
     <classes>
       <class name="tests.LoginTests">
         <methods>
-          <include name="tearDownTest"/>
-          <include name="incorrectMailMessageAndCreateAccount"/>
           <include name="initPages"/>
+          <include name="performLogin" invocation-numbers="1"/>
         </methods>
       </class> <!-- tests.LoginTests -->
     </classes>

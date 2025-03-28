@@ -21,7 +21,7 @@ public class LoginTests extends BaseTest {
     
 
 @BeforeMethod
-public void initPages() {
+private void initPages() {
 	setUp("chrome");
     homePage = new HomePage(driver); // Ensure driver is initialized
     loginPage = new LoginPage(driver);
