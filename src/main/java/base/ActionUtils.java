@@ -1,10 +1,12 @@
 package base;
 
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 
@@ -50,4 +52,21 @@ public class ActionUtils {
             return false; // Element not found in the DOM
         }
     }
+    
+    public void pressEnter() {
+    	actions.sendKeys(Keys.RETURN).perform();
+    }
+    
+    public void moveSlider(int xOffSet,WebElement slider) {
+    	actions.clickAndHold(slider)
+    	.moveByOffset(xOffSet, 0)
+    	.release()
+    	.perform();
+    }
+    
+ // Utility function to extract numeric values from a string
+    public int extractNumericValue(String text) {
+        return Integer.parseInt(text.replaceAll("[^0-9]", ""));
+    }
+    
 }

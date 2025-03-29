@@ -2,9 +2,14 @@
 <suite name="Amazon Test Suite" parallel="tests" thread-count="2">
     <parameter name="browser" value="chrome"/>
 
-    <test name="Amazon UI Tests">
+    <test name="Amazon Login Tests">
         <classes>
             <class name="tests.LoginTests"/>
+        </classes>
+    </test>
+     <test name="Amazon Search Tests">
+        <classes>
+            <class name="tests.SearchAndFilter"/>
         </classes>
     </test>
 </suite>
