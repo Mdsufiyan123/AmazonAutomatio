@@ -54,7 +54,13 @@ public class HomePage {
 
 	@FindBy(xpath = "//div[@data-cy='title-recipe']")
 	private List<WebElement> searcheditems;
-
+	
+	@FindBy(xpath = "//div[@data-cy='price-recipe']//span[contains(text(),'% off')]")
+	private List<WebElement> itemsDiscountSection;
+	
+	@FindBy(xpath = "//div[@data-cy='delivery-recipe']")
+	private List<WebElement> deliverySection;
+	
 	@FindBy(xpath = "//input[@aria-label='Minimum price']")
 	private WebElement increasePrice;
 
@@ -84,7 +90,29 @@ public class HomePage {
 
 	@FindBy(xpath = "//a[text()='Price: Low to High']")
 	private WebElement priceLowToHigh;
-
+	
+	@FindBy(xpath="//div[contains(@id,'sac-suggestion')]//div[contains(@class,'suggestion-ellipsis-direction')]")
+	private List<WebElement> searchAutoSuggestions;
+	
+	@FindBy(xpath="//div[@id='nav-xshop']//*[text()='Mobiles']")
+	private WebElement mobileNavigation;
+	
+	@FindBy(xpath="//div[contains(@id,'refinements')]//*[contains(text(),'Smartphones')]")
+	private WebElement smartPhoneFilter;
+	
+	@FindBy(xpath="//*[@aria-label='Prime Eligible']")
+	private WebElement primeFilter;
+	
+	@FindBy(xpath="//div[@id='brandsRefinements']//*[text()='realme']")
+	private WebElement brandFilter;
+	
+	@FindBy(xpath="//*[contains(text(),'Memory Storage Capacity')]/../..//span[text()='256 GB']")
+	private WebElement memoryFilter;
+	
+	@FindBy(xpath="//span[text()='25% Off or more']")
+	private WebElement discountFilter;
+	
+	
 	// Hover over "Accounts & Lists"
 	public void performHoverAccountsAndList() {
 		actionUtils.hoverOverElement(accountAndList);
@@ -205,5 +233,49 @@ public class HomePage {
 		Assert.assertEquals(priceCheck, sortedList);
 
 	}
+	
+	public void validateSearchSuggestions(String searchItem) {
+		searchTextBox.sendKeys(searchItem);
+		
+		for(WebElement autoSuggest : searchAutoSuggestions) {
+			softAssert.assertTrue(autoSuggest.getText().contains(searchItem), "Auto Suggestions is not relevant" + autoSuggest.getText());
+		}
+		softAssert.assertAll();
+	}
+	
+	public void validateFilters() {
+		mobileNavigation.click();
+		smartPhoneFilter.click();
+		primeFilter.click();
+		brandFilter.click();
+		memoryFilter.click();
+		discountFilter.click();
+		
+		for (WebElement searchList : searcheditems) {
+			softAssert.assertTrue(searchList.getText().contains("realme"),"Brands Filter is showing incorrect data");
+			
+			softAssert.assertTrue(searchList.getText().contains("256 GB")
+					|| searchList.getText().contains("256GB"),"Storage Filter is showing incorrect data");	
+		}
+		
+		
+	for(WebElement discountElement : itemsDiscountSection) {
+			String discountValue = discountElement.getText();
+			int discountNum = actionUtils.extractNumericValue(discountValue);
+	
+			softAssert.assertTrue(discountNum >= 25, "Found a discount below 25%: " + discountNum + "%");
+		}
+	
+	 boolean allHavePrimeIcon = true;
 
+     for (WebElement delivery : deliverySection) {
+         List<WebElement> primeIcons = delivery.findElements(By.xpath(".//i[contains(@class, 'a-icon-prime')]"));
+         if (primeIcons.isEmpty()) {
+             allHavePrimeIcon = false;
+             System.out.println("Missing Prime icon in a delivery recipe.");
+         }
+     }
+     softAssert.assertTrue(allHavePrimeIcon, "Some delivery-recipe divs do not contain the Prime icon!");
+     softAssert.assertAll();
+	}
 }

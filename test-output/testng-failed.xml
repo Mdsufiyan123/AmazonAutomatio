@@ -5,7 +5,8 @@
     <classes>
       <class name="tests.SearchAndFilter">
         <methods>
-          <include name="validatePriceSorting"/>
+          <include name="tearDownTest"/>
+          <include name="validateFilters"/>
           <include name="initPages"/>
         </methods>
       </class> <!-- tests.SearchAndFilter -->

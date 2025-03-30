@@ -8,44 +8,55 @@ import base.BaseTest;
 import pages.HomePage;
 
 public class SearchAndFilter extends BaseTest {
-	
-	
-	private HomePage homePage ;
-	
+
+	private HomePage homePage;
+
 	@BeforeMethod
 	public void initPages() {
 		setUp("chrome");
 		homePage = new HomePage(driver);
-		
+
 	}
+
 //	validating the search drop down discription are in alphabetical order
 	@Test
 	public void searchDropDownAlphabeticalOrder() {
 		homePage.disrciptionAlphabetical();
 	}
-	
-	
+
 	@Test
 	public void searchProductAndValidate() {
-		homePage.searchItemsBasedOnCategory("Electronics","MacBook");
+		homePage.searchItemsBasedOnCategory("Electronics", "MacBook");
 		homePage.validateItemsSearched();
 	}
-	
+
 	@Test
 	public void validatePriceRangeFilter() {
 		homePage.searchItemsBasedOnCategory("Electronics", "Samsung Mobiles");
 		homePage.validatePriceRangeFilter();
-			
+
 	}
-	
+
 	@Test
 	public void validatePriceSorting() {
 		homePage.searchItemsBasedOnCategory("Electronics", "Samsung Mobiles");
 		homePage.validatePriceSorting();
 	}
-
+	
+//	Search for a product and verify relevant suggestions in the dropdown
+	
+	@Test
+	public void validateSearchSuggestions() {
+		homePage.validateSearchSuggestions("samsung");
+	}
+	
+	@Test
+	public void validateFilters() {
+		homePage.validateFilters();
+	}
+	
 	@AfterMethod
-    public void tearDownTest() {
+	public void tearDownTest() {
 		tearDown();
-    }
+	}
 }
