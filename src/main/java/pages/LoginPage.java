@@ -11,9 +11,10 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 
 import base.ActionUtils;
-import junit.framework.Assert;
+
 
 public class LoginPage {
 	
@@ -53,7 +54,7 @@ public class LoginPage {
 	@FindBy(xpath="//*[contains(text(),'Your password is incorrect')]")
 	private WebElement incorrectPasswordMsg;
 	
-	@FindBy(xpath="//div[@id='invalid-email-alert']")
+	@FindBy(xpath="//*[contains(text(),'Invalid email')]")
 	private WebElement invalidEmailMsg;
 	
 	@FindBy(xpath="//span[@id='continue']/ancestor::div/h1[contains(text(),'Sign in')]")
@@ -71,17 +72,17 @@ public class LoginPage {
 			e.printStackTrace();
 		}
 		if(actionUtils.isElementPresent(signInOrCreateIcon) && signInOrCreateIcon.isDisplayed()) {
-			Assert.assertTrue("Error For Invalid Mail is Not Displayed",invalidEmailMsg.isDisplayed());
+			Assert.assertTrue(invalidEmailMsg.isDisplayed(),"Error For Invalid Mail is Not Displayed");
 		}else {
 		
 		passwordField.sendKeys(password);
 		SignInIcon.click();
 		if(actionUtils.isElementPresent(SignInIcon) && SignInIcon.isDisplayed()) {
 			Assert.assertTrue(passwordIncorrectBox.isDisplayed());
-			Assert.assertTrue("Proper Error Message is Not Displayed",incorrectPasswordMsg.isDisplayed());
+			Assert.assertTrue(incorrectPasswordMsg.isDisplayed(),"Proper Error Message is Not Displayed");
 			}else {
 				Assert.assertEquals(driver.getCurrentUrl(), "https://www.amazon.in/?ref_=nav_signin");
-				Assert.assertTrue("Correct Page Not Found", headerNav.isDisplayed());
+				Assert.assertTrue(headerNav.isDisplayed(), "Correct Page Not Found");
 			}
 		
 	}

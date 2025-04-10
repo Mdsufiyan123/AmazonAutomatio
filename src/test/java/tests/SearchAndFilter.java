@@ -1,10 +1,13 @@
 package tests;
 
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import base.BaseTest;
+import base.ExtentReportManager;
 import pages.HomePage;
 
 public class SearchAndFilter extends BaseTest {
@@ -21,17 +24,20 @@ public class SearchAndFilter extends BaseTest {
 //	validating the search drop down discription are in alphabetical order
 	@Test
 	public void searchDropDownAlphabeticalOrder() {
+		ExtentReportManager.startTest("Search DropDown Alphabetical Order");
 		homePage.disrciptionAlphabetical();
 	}
 
 	@Test
 	public void searchProductAndValidate() {
+		ExtentReportManager.startTest("Search Product And Validate");
 		homePage.searchItemsBasedOnCategory("Electronics", "MacBook");
-		homePage.validateItemsSearched();
+		homePage.validateItemsSearched("MacBook","Apple");
 	}
 
 	@Test
 	public void validatePriceRangeFilter() {
+		ExtentReportManager.startTest("Validate Price Range Filter");
 		homePage.searchItemsBasedOnCategory("Electronics", "Samsung Mobiles");
 		homePage.validatePriceRangeFilter();
 
@@ -39,6 +45,7 @@ public class SearchAndFilter extends BaseTest {
 
 	@Test
 	public void validatePriceSorting() {
+		ExtentReportManager.startTest("Validate Price Sorting");
 		homePage.searchItemsBasedOnCategory("Electronics", "Samsung Mobiles");
 		homePage.validatePriceSorting();
 	}
@@ -47,16 +54,21 @@ public class SearchAndFilter extends BaseTest {
 	
 	@Test
 	public void validateSearchSuggestions() {
+		ExtentReportManager.startTest("Validate Search Suggestions");
 		homePage.validateSearchSuggestions("samsung");
 	}
 	
 	@Test
 	public void validateFilters() {
-		homePage.validateFilters();
+		ExtentReportManager.startTest("Validate Filters");
+		homePage.addFiltersAndValidateResults();
+		homePage.removeFiltersAndValidateResults();
 	}
 	
 	@AfterMethod
-	public void tearDownTest() {
+    public void tearDownTest() {
 		tearDown();
 	}
 }
+        
+

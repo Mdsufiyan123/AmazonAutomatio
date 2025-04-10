@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -9,6 +8,7 @@
 	<groupId>com.sufiyan.automation</groupId>
 	<artifactId>com.sufiyan.automation</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+
 	<packaging>jar</packaging>
 
 	<name>com.sufiyan.automation</name>
@@ -42,11 +42,18 @@
 			<version>5.3.0</version>
 		</dependency>
 
-		<!-- ✅ JSON Handling (Read/Write JSON Files) -->
+		<!-- ✅ JSON Handling -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 			<version>2.15.0</version>
+		</dependency>
+
+		<!-- ✅ JSON Simple for Parsing -->
+		<dependency>
+			<groupId>com.googlecode.json-simple</groupId>
+			<artifactId>json-simple</artifactId>
+			<version>1.1.1</version>
 		</dependency>
 
 		<!-- ✅ Logging (SLF4J + Log4j) -->
@@ -61,38 +68,47 @@
 			<version>2.20.0</version>
 		</dependency>
 
-		<!-- ✅ Apache Commons IO (For File Handling) -->
+		<!-- ✅ Apache Commons IO -->
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.11.0</version>
 		</dependency>
 
-		<!-- ✅ TestNG for Test Execution -->
+		<!-- ✅ Lombok (Fixes IllegalAccessError) -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.30</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- ✅ Lombok Annotation Processing Fix -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok-mapstruct-binding</artifactId>
+			<version>0.2.0</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- ✅ TestNG -->
 		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
-			<version>7.7.0</version>
-			<scope>test</scope>
+			<version>7.9.0</version>
 		</dependency>
 
-		<!-- ✅ JUnit 5 (If Needed, But TestNG is Preferred) -->
+		<!-- ✅ Extent Reports -->
 		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-engine</artifactId>
-			<version>5.7.1</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.googlecode.json-simple</groupId>
-			<artifactId>json-simple</artifactId>
-			<version>1.1.1</version>
+			<groupId>com.aventstack</groupId>
+			<artifactId>extentreports</artifactId>
+			<version>5.0.9</version>
 		</dependency>
 	</dependencies>
 
 	<build>
 		<plugins>
-			<!-- ✅ Maven Compiler Plugin (Ensures Java Version Compatibility) -->
+			<!-- ✅ Maven Compiler Plugin -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -100,14 +116,29 @@
 				<configuration>
 					<source>${maven.compiler.source}</source>
 					<target>${maven.compiler.target}</target>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+							<version>1.18.30</version>
+						</path>
+					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
 
-			<!-- ✅ Maven Surefire Plugin (For Running TestNG/JUnit Tests) -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.0.0-M5</version>
+				<version>3.0.0-M7</version>
+				<configuration>
+					<suiteXmlFiles>
+						<suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
+					</suiteXmlFiles>
+					<includes>
+						<include>**/*.java</include> <!-- Allow any Java file as
+						a test -->
+					</includes>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

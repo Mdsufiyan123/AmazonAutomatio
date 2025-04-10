@@ -8,6 +8,9 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import com.aventstack.extentreports.Status;
+
 import java.time.Duration;
 
 public class ActionUtils {
@@ -67,5 +70,21 @@ public class ActionUtils {
 	public int extractNumericValue(String text) {
 		return Integer.parseInt(text.replaceAll("[^0-9]", ""));
 	}
-
+	
+	 public void logAssertion(String logMessage, boolean condition, String failureMessage, String successMessage) {
+	        // Log the action being performed
+	        ExtentReportManager.getTest().log(Status.INFO, logMessage);
+	        
+	        try {
+	            // Assert condition
+	            if (!condition) {
+	                throw new AssertionError(failureMessage);
+	            }
+	            // Log as Pass if assertion is successful
+	            ExtentReportManager.getTest().log(Status.PASS, successMessage);
+	        } catch (AssertionError e) {
+	            // Log as Fail if assertion fails
+	            ExtentReportManager.getTest().log(Status.FAIL, "Failed: " + failureMessage);
+	        }
+	    }
 }
