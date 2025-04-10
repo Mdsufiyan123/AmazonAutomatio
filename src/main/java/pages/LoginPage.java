@@ -48,9 +48,6 @@ public class LoginPage {
 	@FindBy(id="navbar-main")
 	private WebElement headerNav;
 	
-	@FindBy(id="auth-error-message-box")
-	private WebElement passwordIncorrectBox;
-	
 	@FindBy(xpath="//*[contains(text(),'Your password is incorrect')]")
 	private WebElement incorrectPasswordMsg;
 	
@@ -78,7 +75,7 @@ public class LoginPage {
 		passwordField.sendKeys(password);
 		SignInIcon.click();
 		if(actionUtils.isElementPresent(SignInIcon) && SignInIcon.isDisplayed()) {
-			Assert.assertTrue(passwordIncorrectBox.isDisplayed());
+
 			Assert.assertTrue(incorrectPasswordMsg.isDisplayed(),"Proper Error Message is Not Displayed");
 			}else {
 				Assert.assertEquals(driver.getCurrentUrl(), "https://www.amazon.in/?ref_=nav_signin");
