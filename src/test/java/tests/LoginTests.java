@@ -24,17 +24,16 @@ public class LoginTests extends BaseTest {
     private String path = "/Users/smd/eclipse-workspace/com.sufiyan.automation/data/loginData.json";
     
 
-@BeforeMethod
-private void initPages() {
-	setUp("chrome");
-    homePage = new HomePage(driver); // Ensure driver is initialized
-    loginPage = new LoginPage(driver);
-    ExtentReportManager.startTest("Login Test");
-    ExtentReportManager.getTest().log(Status.INFO,"Launching Browser and Navigation to Login Page");
-    homePage.performHoverAccountsAndList();
-	homePage.clickSignInIcon();
-}
-
+    @BeforeMethod
+    public void initPages() {
+        setUp("chrome");
+        homePage = new HomePage(getDriver()); 
+        loginPage = new LoginPage(getDriver());
+        ExtentReportManager.startTest("Login Test");
+        ExtentReportManager.getTest().log(Status.INFO, "Launching Browser and Navigating to Login Page");
+        homePage.performHoverAccountsAndList();
+        homePage.clickSignInIcon();
+    }
 
 	
 	@DataProvider(name="loginTestData")

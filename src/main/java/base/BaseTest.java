@@ -2,7 +2,6 @@ package base;
 
 import java.io.File;
 import java.time.Duration;
-
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
@@ -15,25 +14,29 @@ import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
-
 import io.github.bonigarcia.wdm.WebDriverManager;
 
 public class BaseTest {
 
-    protected WebDriver driver;
+    private static ThreadLocal<WebDriver> driver = new ThreadLocal<>();
     protected WebDriverWait wait;
+
+    public WebDriver getDriver() {
+        return driver.get();
+    }
 
     @Parameters("browser")
     public void setUp(@Optional("chrome") String browser) {
         boolean isHeadless = Boolean.parseBoolean(System.getProperty("headless", "false"));
 
+        WebDriver webDriver;
         if (browser.equalsIgnoreCase("chrome")) {
             WebDriverManager.chromedriver().setup();
             ChromeOptions options = new ChromeOptions();
             if (isHeadless) {
-                options.addArguments("--headless", "--disable-gpu", "--window-size=1920x1080");
+                options.addArguments("--headless=new", "--disable-gpu", "--window-size=1920,1080");
             }
-            driver = new ChromeDriver(options);
+            webDriver = new ChromeDriver(options);
 
         } else if (browser.equalsIgnoreCase("firefox")) {
             WebDriverManager.firefoxdriver().setup();
@@ -41,7 +44,7 @@ public class BaseTest {
             if (isHeadless) {
                 options.addArguments("--headless");
             }
-            driver = new FirefoxDriver(options);
+            webDriver = new FirefoxDriver(options);
 
         } else if (browser.equalsIgnoreCase("edge")) {
             WebDriverManager.edgedriver().setup();
@@ -49,27 +52,29 @@ public class BaseTest {
             if (isHeadless) {
                 options.addArguments("--headless");
             }
-            driver = new EdgeDriver(options);
+            webDriver = new EdgeDriver(options);
 
         } else {
             throw new IllegalArgumentException("Invalid Browser Name: " + browser);
         }
 
-        driver.manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        driver.set(webDriver);
+        getDriver().manage().window().maximize();
+        getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        wait = new WebDriverWait(getDriver(), Duration.ofSeconds(10));
 
-        driver.get("https://amazon.in");
+        getDriver().get("https://amazon.in");
     }
 
     public void tearDown() {
-        if (driver != null) {
-            driver.quit();
+        if (getDriver() != null) {
+            getDriver().quit();
+            driver.remove();
         }
     }
 
     @BeforeSuite
-    public void setUpExtendReports() {
+    public void setUpExtentReports() {
         String reportFolderPath = System.getProperty("user.dir") + "/test-output/extent-reports/";
         File reportFolder = new File(reportFolderPath);
 

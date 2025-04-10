@@ -19,7 +19,7 @@ public class Pagination extends BaseTest {
 	@BeforeClass
 	public void initPages() {
 		setUp("chrome");
-		homePage = new HomePage(driver);
+		homePage = new HomePage(getDriver());
 
 	}
 	

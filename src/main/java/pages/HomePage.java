@@ -11,6 +11,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
@@ -26,6 +27,7 @@ import base.ExtentReportManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
 
 public class HomePage {
 
@@ -288,25 +290,38 @@ public class HomePage {
 	}
 	
 	public void validateSearchSuggestions(String searchItem) {
-		searchTextBox.sendKeys(searchItem);
-		ExtentReportManager.getTest().log(Status.INFO, "Validating the search suggestions are up to the mark");
-		try {
-			for(WebElement autoSuggest : searchAutoSuggestions) {
-			softAssert.assertTrue(autoSuggest.getText().contains(searchItem), "Auto Suggestions is not relevant" + autoSuggest.getText());
-			
-		}
-		}catch(AssertionError e) {
-			ExtentReportManager.getTest().log(Status.FAIL, "Validating the after applying filter price from 'Low-High' are showing correct results");
-			
-		}
-		// Assert all soft assertions and log the result accordingly
+	    searchTextBox.sendKeys(searchItem);
+	    ExtentReportManager.getTest().log(Status.INFO, "Validating the search suggestions are up to the mark");
+
+	    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+	    // Wait for search suggestions to be visible
+	    wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector(".s-suggestion.s-suggestion-ellipsis-direction")));
+
 	    try {
-	        softAssert.assertAll();  // This will throw an exception if any soft assertion failed
-	        ExtentReportManager.getTest().log(Status.PASS, "Validated products and filters on the previous page.");
+	        List<WebElement> suggestions = driver.findElements(By.cssSelector(".s-suggestion.s-suggestion-ellipsis-direction"));
+
+	        for (int i = 0; i < suggestions.size(); i++) {
+	            // Re-fetch element each time to avoid stale references
+	            WebElement autoSuggest = driver.findElements(By.cssSelector(".s-suggestion.s-suggestion-ellipsis-direction")).get(i);
+
+	            softAssert.assertTrue(autoSuggest.getText().toLowerCase().contains(searchItem.toLowerCase()),
+	                                  "Auto Suggestion is not relevant: " + autoSuggest.getText());
+	        }
+	    } catch (StaleElementReferenceException e) {
+	        ExtentReportManager.getTest().log(Status.FAIL, "StaleElementReferenceException occurred while validating search suggestions.");
+	    }
+
+	    // Assert all soft assertions
+	    try {
+	        softAssert.assertAll();
+	        ExtentReportManager.getTest().log(Status.PASS, "Validated search suggestions successfully.");
 	    } catch (AssertionError e) {
-	        ExtentReportManager.getTest().log(Status.FAIL, "Failed: Validating products and filters on the previous page.");
+	        ExtentReportManager.getTest().log(Status.FAIL, "Search suggestions validation failed.");
 	    }
 	}
+
+
 	
 	public void addFiltersAndValidateResults() {
 		ExtentReportManager.getTest().log(Status.INFO, "Adding the filters for the mobile and validating the results");

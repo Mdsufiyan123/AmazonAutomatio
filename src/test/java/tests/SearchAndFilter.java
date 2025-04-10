@@ -17,7 +17,7 @@ public class SearchAndFilter extends BaseTest {
 	@BeforeMethod
 	public void initPages() {
 		setUp("chrome");
-		homePage = new HomePage(driver);
+		homePage = new HomePage(getDriver());
 
 	}
 
