@@ -53,10 +53,10 @@ public class LoginTests extends BaseTest {
 		ExtentReportManager.getTest().log(Status.PASS, "Successfully Logged In");
 	}
 	
-	@AfterMethod
-    public void tearDownTest() {
-		tearDown();
-    }
+//	@AfterMethod
+//    public void tearDownTest() {
+//		tearDown();
+//    }
 	
 	
 }
