@@ -20,9 +20,8 @@ import org.testng.asserts.SoftAssert;
 
 import com.aventstack.extentreports.Status;
 
-import base.ActionUtils;
-import base.ExtentReportManager;
-
+import utils.ActionUtils;
+import utils.ExtentReportManager;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -33,16 +32,15 @@ public class HomePage {
 
 	private WebDriver driver;
 	private WebDriverWait wait;
-	private ActionUtils actionUtils;
 	private Select dropDown;
-	private SoftAssert softAssert; // Declare softAssert here for class-wide access
+	private SoftAssert softAssert;
 
 	// Constructor
 	public HomePage(WebDriver driver) {
 		this.driver = driver;
 		this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-		this.actionUtils = new ActionUtils(driver);
-		this.softAssert = new SoftAssert(); // Initialize softAssert in the constructor
+		ActionUtils.initActions(driver);
+		this.softAssert = new SoftAssert();
 		PageFactory.initElements(driver, this);
 	}
 
@@ -130,7 +128,7 @@ public class HomePage {
 	
 	// Hover over "Accounts & Lists"
 	public void performHoverAccountsAndList() {
-		actionUtils.hoverOverElement(accountAndList);
+		ActionUtils.hoverOverElement(accountAndList);
 	}
 
 	// Click on "Sign In" button
@@ -186,11 +184,20 @@ public class HomePage {
 
 
 	public void searchItemsBasedOnCategory(String category, String searchItem) {
+		// Wait for search dropdown to be present and clickable
+		wait.until(ExpectedConditions.presenceOfElementLocated(By.id("searchDropdownBox")));
 		searchDropDown.click();
+		
+		// Wait for dropdown options to be present
+		wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//select[@id='searchDropdownBox']/option")));
 		dropDown = new Select(searchDropDown);
 		dropDown.selectByVisibleText(category);
+		
+		// Wait for search text box to be present and clickable
+		wait.until(ExpectedConditions.presenceOfElementLocated(By.id("twotabsearchtextbox")));
+		wait.until(ExpectedConditions.elementToBeClickable(searchTextBox));
 		searchTextBox.sendKeys(searchItem);
-		actionUtils.pressEnter();
+		ActionUtils.pressEnter();
 	}
 
 	public void validatePriceRangeFilter() {
@@ -198,9 +205,9 @@ public class HomePage {
 		increaseMinPrice(increasePrice, 60); // Increase min price (move left slider right)
 		decreaseMaxPrice(decreasePrice, 60); // Decrease max price (move right slider left)
 		goRangeIcon.click();
-		actionUtils.waitUntilVisible(resultsHeader);
-		int minPrice = actionUtils.extractNumericValue(minPriceRange.getText());
-		int maxPrice = actionUtils.extractNumericValue(maxPriceRange.getText());
+		ActionUtils.waitUntilVisible(resultsHeader);
+		int minPrice = ActionUtils.extractNumericValue(minPriceRange.getText());
+		int maxPrice = ActionUtils.extractNumericValue(maxPriceRange.getText());
 		ExtentReportManager.getTest().log(Status.INFO, "Validating the results showing is within price range");
 		try {
 		for (WebElement priceElement : priceList) {
@@ -210,21 +217,20 @@ public class HomePage {
 						.findElements(By.xpath(".//*[contains(@class,'puis-sponsored-label-text')]")).isEmpty();
 
 				if (isSponsored) {
-					System.out.println("Skipping sponsored item price validation.");
 					continue;
 				}
 
 			} catch (NoSuchElementException e) {
-				System.out.println("No sponsored tag found. Proceeding with validation.");
+				// Continue with validation
 			}
 
 			try {
-				int numPrice = actionUtils.extractNumericValue(priceElement.getText());
+				int numPrice = ActionUtils.extractNumericValue(priceElement.getText());
 				softAssert.assertTrue(numPrice >= minPrice && numPrice <= maxPrice,
 						"The Price is not in the correct range[" +minPrice + "-" + maxPrice + ":" + numPrice);
 
 			} catch (NumberFormatException e) {
-				System.out.println("Skipping invalid price: " + priceElement.getText());
+				// Skip invalid prices
 			}
 		}
 		}catch(AssertionError e) {
@@ -269,24 +275,34 @@ public class HomePage {
 	public void validatePriceSorting() {
 		featuredDropDown.click();
 		priceLowToHigh.click();
-
-		// Creating a list for prices
+		
+		// Wait for results to update
+		wait.until(ExpectedConditions.visibilityOf(resultsHeader));
+		
+		// Creating a list for original prices
 		List<Integer> priceCheck = new ArrayList<>();
 		for (WebElement price : priceList) {
-			priceCheck.add(actionUtils.extractNumericValue(price.getText()));
-			System.out.println(priceCheck);
+			try {
+				int priceValue = ActionUtils.extractNumericValue(price.getText());
+				priceCheck.add(priceValue);
+				ExtentReportManager.getTest().log(Status.INFO, "Extracted price: " + priceValue);
+			} catch (NumberFormatException e) {
+				ExtentReportManager.getTest().log(Status.FAIL, "Failed to parse price: " + price.getText());
+			}
 		}
-
-		// Create a new Sorted list and asserting with the priceList
-		List<Integer> sortedList = new ArrayList<>(priceCheck);
-		Collections.sort(sortedList);
-		ExtentReportManager.getTest().log(Status.INFO, "Validating the after applying filter price from 'Low-High' are showing correct results");
+		
+		// Create a sorted copy of the price list
+		List<Integer> sortedPrices = new ArrayList<>(priceCheck);
+		Collections.sort(sortedPrices);
+		
+		ExtentReportManager.getTest().log(Status.INFO, "Validating prices are sorted in ascending order");
 		try {
-			Assert.assertEquals(sortedList,priceCheck);
-		}catch(AssertionError e) {
-			ExtentReportManager.getTest().log(Status.FAIL, "After applying filter price from 'Low-High' are not showing correct results");
+			Assert.assertEquals(priceCheck, sortedPrices, "Prices are not sorted in ascending order");
+			ExtentReportManager.getTest().log(Status.PASS, "Prices are correctly sorted in ascending order");
+		} catch (AssertionError e) {
+			ExtentReportManager.getTest().log(Status.FAIL, "Prices are not sorted in ascending order: " + e.getMessage());
+			throw e;
 		}
-
 	}
 	
 	public void validateSearchSuggestions(String searchItem) {
@@ -347,7 +363,7 @@ public class HomePage {
 	    try {
 	        for (WebElement discountElement : itemsDiscountSection) {
 	            String discountValue = discountElement.getText();
-	            int discountNum = actionUtils.extractNumericValue(discountValue);
+	            int discountNum = ActionUtils.extractNumericValue(discountValue);
 	            softAssert.assertTrue(discountNum >= 25, "Found a discount below 25%: " + discountNum + "%");
 	        }
 	        ExtentReportManager.getTest().log(Status.PASS, "Discounts validated successfully.");
@@ -387,7 +403,7 @@ public class HomePage {
 	    try {
 	        brandFilter.click();
 	        memoryFilter.click();
-	        actionUtils.waitUntilVisible(resultsHeader);
+	        ActionUtils.waitUntilVisible(resultsHeader);
 	        
 	        int removeFilterCount = searcheditems.size();
 	        softAssert.assertTrue(removeFilterCount > resultCount, "Number of results did not increase after removing the filters.");

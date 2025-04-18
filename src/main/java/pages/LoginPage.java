@@ -1,33 +1,22 @@
 package pages;
 
 import java.time.Duration;
-import java.util.Set;
-
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
-
-import base.ActionUtils;
-
+import utils.ActionUtils;
 
 public class LoginPage {
 	
 	private WebDriver driver;
-	private WebDriverWait wait;
-	private JavascriptExecutor jsExecutor;
-	private ActionUtils actionUtils;
 	
 	public LoginPage(WebDriver driver) {
-		this.driver= driver;
-		this.jsExecutor = (JavascriptExecutor) driver;
-		this.wait = new WebDriverWait(driver,Duration.ofSeconds(10)); 
-		this.actionUtils = new ActionUtils(driver);
+		this.driver = driver;
+		ActionUtils.initActions(driver);
 		PageFactory.initElements(driver,this);
 		
 	}
@@ -68,13 +57,13 @@ public class LoginPage {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		if(actionUtils.isElementPresent(signInOrCreateIcon) && signInOrCreateIcon.isDisplayed()) {
+		if(ActionUtils.isElementPresent(signInOrCreateIcon) && signInOrCreateIcon.isDisplayed()) {
 			Assert.assertTrue(invalidEmailMsg.isDisplayed(),"Error For Invalid Mail is Not Displayed");
 		}else {
 		
 		passwordField.sendKeys(password);
 		SignInIcon.click();
-		if(actionUtils.isElementPresent(SignInIcon) && SignInIcon.isDisplayed()) {
+		if(ActionUtils.isElementPresent(SignInIcon) && SignInIcon.isDisplayed()) {
 
 			Assert.assertTrue(incorrectPasswordMsg.isDisplayed(),"Proper Error Message is Not Displayed");
 			}else {
@@ -84,5 +73,7 @@ public class LoginPage {
 		
 	}
 	}
-}
+	
+	}
+
 	

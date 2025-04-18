@@ -10,10 +10,11 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import org.testng.ITestResult;
 
 import base.BaseTest;
-import base.ExtentReportManager;
-import base.JsonReader;
+import utils.ExtentReportManager;
+import utils.JsonReader;
 import pages.HomePage;
 import pages.LoginPage;
 
@@ -29,7 +30,7 @@ public class LoginTests extends BaseTest {
         setUp("chrome");
         homePage = new HomePage(getDriver()); 
         loginPage = new LoginPage(getDriver());
-        ExtentReportManager.startTest("Login Test");
+        ExtentReportManager.createTest("Login With Different Credentials");
         ExtentReportManager.getTest().log(Status.INFO, "Launching Browser and Navigating to Login Page");
         homePage.performHoverAccountsAndList();
         homePage.clickSignInIcon();
@@ -45,7 +46,7 @@ public class LoginTests extends BaseTest {
 			};
 		}
 	
-	@Test(dataProvider="loginTestData")
+	@Test(dataProvider="loginTestData", description = "LoginTests - Validate Login with Different Credentials")
 	public void performLogin(String email,String password) {
 		ExtentReportManager.getTest().log(Status.INFO,"Attempting Login With Email: " + email);
 		loginPage.performLogin(email, password);

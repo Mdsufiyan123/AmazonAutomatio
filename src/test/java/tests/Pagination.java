@@ -9,7 +9,7 @@ import org.testng.annotations.Test;
 import com.aventstack.extentreports.Status;
 
 import base.BaseTest;
-import base.ExtentReportManager;
+import utils.ExtentReportManager;
 import pages.HomePage;
 
 public class Pagination extends BaseTest {
@@ -24,18 +24,18 @@ public class Pagination extends BaseTest {
 	}
 	
 	
-	@Test(priority=1)
+	@Test(priority=1, description = "Pagination - Validate Pagination Container")
 	public void validatePaginationContainer() {
-		ExtentReportManager.startTest("Validate Pagination Container");
+		ExtentReportManager.createTest("Validate Pagination Container");
 		ExtentReportManager.getTest().log(Status.INFO, "Starting Validation of Pagination Container Test Case");
 		homePage.addFilters();
 		homePage.validatePaginationContainer();
 		ExtentReportManager.getTest().log(Status.PASS, "Validated of Pagination Container Test Case");
 	}
 	
-	@Test(dependsOnMethods="validatePaginationContainer")
+	@Test(dependsOnMethods="validatePaginationContainer", description = "Pagination - Validate Pagination Navigation")
 	public void validatePagination() {
-		ExtentReportManager.startTest("Validate Pagination");
+		ExtentReportManager.createTest("Validate Pagination");
 		ExtentReportManager.getTest().log(Status.INFO, "Validation Pagination");
 		homePage.validatePagination();
 		ExtentReportManager.getTest().log(Status.PASS, "Validated Pagination");
