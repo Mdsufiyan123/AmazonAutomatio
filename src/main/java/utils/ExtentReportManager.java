@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
+import com.aventstack.extentreports.MediaEntityBuilder;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import com.aventstack.extentreports.reporter.configuration.Theme;
 
@@ -56,8 +57,26 @@ public class ExtentReportManager {
 
     public static void addScreenshot(String screenshotPath) {
         try {
-            getTest().addScreenCaptureFromPath(screenshotPath);
+            File screenshotFile = new File(screenshotPath);
+            if (screenshotFile.exists()) {
+                getTest().addScreenCaptureFromPath(screenshotFile.getAbsolutePath());
+            }
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public static void addScreenshotWithLog(com.aventstack.extentreports.Status status, String message, String screenshotPath) {
+        try {
+            File screenshotFile = new File(screenshotPath);
+            if (screenshotFile.exists()) {
+                getTest().log(status, message, 
+                    MediaEntityBuilder.createScreenCaptureFromPath(screenshotFile.getAbsolutePath()).build());
+            } else {
+                getTest().log(status, message);
+            }
+        } catch (Exception e) {
+            getTest().log(status, message);
             e.printStackTrace();
         }
     }

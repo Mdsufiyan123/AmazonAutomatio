@@ -4,36 +4,45 @@ import org.testng.ITestListener;
 import org.testng.ITestResult;
 import com.aventstack.extentreports.Status;
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class ListenerClass implements ITestListener {
     @Override
     public void onTestFailure(ITestResult result) {
         try {
-            // Take screenshot
+            // Take screenshot and get the path
             ScreenshotUtil screenshotUtil = new ScreenshotUtil();
-            screenshotUtil.takeScreenshot(result.getName());
+            String screenshotPath = screenshotUtil.takeScreenshot(result.getName());
             
             // Log failure in Extent Report
             if (ExtentReportManager.getTest() != null) {
+                // Log the error message
                 ExtentReportManager.getTest().log(Status.FAIL, "Test Failed: " + result.getThrowable().getMessage());
                 
-                // Try to use the screenshot from the persistent location first
-                String timestamp = String.valueOf(System.currentTimeMillis());
-                String fileName = result.getName() + "_" + timestamp + ".png";
-                
-                // Check both locations - persistent directory first, then test-output
-                String baseDir = System.getProperty("user.dir");
-                File persistentFile = new File(baseDir, "screenshots/" + fileName);
-                File reportFile = new File(baseDir, "test-output/screenshots/" + fileName);
-                
-                if (persistentFile.exists()) {
-                    ExtentReportManager.getTest().addScreenCaptureFromPath(persistentFile.getAbsolutePath());
-                } else if (reportFile.exists()) {
-                    ExtentReportManager.getTest().addScreenCaptureFromPath(reportFile.getAbsolutePath());
+                // Add screenshot if available
+                if (screenshotPath != null && new File(screenshotPath).exists()) {
+                    try {
+                        // Use the helper method that combines logging and screenshot
+                        ExtentReportManager.addScreenshotWithLog(
+                            Status.FAIL, 
+                            "Screenshot at failure point", 
+                            screenshotPath
+                        );
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+    
+    @Override
+    public void onTestSkipped(ITestResult result) {
+        if (ExtentReportManager.getTest() != null) {
+            ExtentReportManager.getTest().log(Status.SKIP, "Test Skipped");
         }
     }
 }

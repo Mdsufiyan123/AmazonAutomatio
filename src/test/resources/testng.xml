@@ -5,8 +5,8 @@
     </listeners>
     <test name="AllTests">
         <classes>
-            <class name="tests.SearchAndFilter"/>
             <class name="tests.LoginTests"/>
+            <class name="tests.SearchAndFilter"/>
             <class name="tests.Pagination"/>
         </classes>      
     </test> 	
