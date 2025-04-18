@@ -1,11 +1,6 @@
 pipeline {
     agent any
     
-    tools {
-        maven 'Maven'
-        jdk 'JDK17'
-    }
-    
     stages {
         stage('Checkout') {
             steps {
@@ -21,7 +16,7 @@ pipeline {
         
         stage('Test') {
             steps {
-                sh 'clean test -Dtest=LoginTests -Dheadless=true'
+                sh 'mvn test -Dheadless=true'
             }
             post {
                 always {
